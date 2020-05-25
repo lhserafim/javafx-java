@@ -2,14 +2,17 @@ package gui;
 
 import gui.util.Alerts;
 import gui.util.Constraints;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.util.Callback;
+import model.entities.Person;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -26,6 +29,13 @@ public class ViewController implements Initializable {
     private Label labelResult;
     @FXML
     private Button btSum; //javafx.scene.control.Button;
+    @FXML
+    private ComboBox<Person> comboBoxPerson;
+    // Para carregar o comboBox é obrigatório criar um objeto ObservableList<>
+    private ObservableList<Person> obsList;
+
+    @FXML
+    private Button btAll;
 
     @FXML
     public void onBtSumAction() {
@@ -50,6 +60,42 @@ public class ViewController implements Initializable {
         //Constraints.setTextFieldInteger(txtNumber2);
         Constraints.setTextFieldMaxLength(txtNumber1,12);
         Constraints.setTextFieldMaxLength(txtNumber2,12);
+
+        // Implementação da comboBox
+        List<Person> list = new ArrayList<>(); // Cria uma lista padrão
+        list.add(new Person(1,"Maria","maria@gmail.com")); // Add instanciando classe
+        list.add(new Person(2,"José","jose@gmail.com"));
+        list.add(new Person(3,"João","joao@gmail.com"));
+        list.add(new Person(4,"Paulo","paulo@gmail.com"));
+
+        obsList = FXCollections.observableArrayList(list); // carrega na ObservableList
+        comboBoxPerson.setItems(obsList); // carrega na comboBox
+
+        // IMPLEMENTAÇÃO P/ FORMATAR EXIBIÇÃO NA COMBOBOX
+        Callback<ListView<Person>, ListCell<Person>> factory = lv -> new ListCell<Person>() {
+            @Override
+            protected void updateItem(Person item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getName());
+            }
+        };
+        comboBoxPerson.setCellFactory(factory);
+        comboBoxPerson.setButtonCell(factory.call(null));
+    }
+
+    @FXML
+    // Recuperar o item selecionado na tela
+    public void onComboBoxPersonAction() {
+        Person person = comboBoxPerson.getSelectionModel().getSelectedItem();
+        System.out.println(person);
+    }
+
+    @FXML
+    //Percorrer todos os elementos da lista
+    public void onBtAllAction() {
+        for (Person person : comboBoxPerson.getItems()) {
+            System.out.println(person);
+        }
     }
 
     /*
